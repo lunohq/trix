@@ -2,6 +2,53 @@
 {lang} = Trix.config
 
 Trix.config.toolbar =
+  buttons:
+    # Text
+    bold:
+      attribute: "bold"
+    italic:
+      attribute: "bold"
+    strike:
+      attribute: "strike"
+    link:
+      attribute: "href"
+      action: "link"
+      createDialog: -> """
+        <div class="link_url_fields">
+          <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
+          <div class="button_group">
+            <input type="button" value="#{lang.link}" data-method="setAttribute">
+            <input type="button" value="#{lang.unlink}" data-method="removeAttribute">
+          </div>
+        </div>
+      """
+
+    # Block
+    quote:
+      attribute: "quote"
+    code:
+      attribute: "code"
+    bullets:
+      attribute: "bullet"
+    numbers:
+      attribute: "number"
+    outdent:
+      action: "decreaseBlockLevel"
+    indent:
+      action: "increaseBlockLevel"
+
+    # History
+    undo:
+      action: "undo"
+    redo:
+      action: "redo"
+
+  groups: [
+    ["bold", "italic", "strike", "link"]
+    ["quote", "code", "bullets", "numbers", "outdent", "indent"]
+    ["undo", "redo"]
+  ]
+
   content: makeFragment """
     <div class="button_groups">
       <span class="button_group text_tools">
@@ -28,13 +75,6 @@ Trix.config.toolbar =
 
     <div class="dialogs">
       <div class="dialog link_dialog" data-attribute="href" data-dialog="href">
-        <div class="link_url_fields">
-          <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
-          <div class="button_group">
-            <input type="button" value="#{lang.link}" data-method="setAttribute">
-            <input type="button" value="#{lang.unlink}" data-method="removeAttribute">
-          </div>
-        </div>
       </div>
     </div>
   """

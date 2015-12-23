@@ -1,5 +1,19 @@
 {normalizeRange, rangesAreEqual} = Trix
 
+deepCopy = (object) ->
+  result = {}
+  for key, value of object
+    result[key] = switch
+      when Array.isArray(value)
+        value.slice(0)
+      when typeof value is "object"
+        deepCopy(value)
+      else
+        value
+  result
+
+originalConfig = deepCopy(Trix.config)
+
 initialized = false
 initializedCallbacks = []
 
@@ -13,6 +27,10 @@ editorInitialized = (callback) ->
   else
     initializedCallbacks.push(callback)
 
+setTemplate = (template) ->
+  initialized = false
+  setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
+
 @after = (defer, callback) ->
   setTimeout(callback, defer)
 
@@ -20,11 +38,9 @@ editorInitialized = (callback) ->
 
 @editorModule = (name, {template, setup, teardown} = {}) ->
   module name,
-
     setup: ->
-      initialized = false
       if template?
-        setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
+        setTemplate(template)
       setup?()
 
     teardown: ->
@@ -32,13 +48,22 @@ editorInitialized = (callback) ->
         setFixtureHTML("")
       teardown?()
 
-@editorTest = (name, callback) ->
+@editorTest = (name, options = {}, callback) ->
+  if callback?
+    {template, setup, teardown} = options
+  else
+    callback = options
+
   done = (expectedDocumentValue) ->
     if expectedDocumentValue
       equal getDocument().toString(), expectedDocumentValue
+    teardown?()
     QUnit.start()
 
   asyncTest name, ->
+    setup?()
+    setTemplate(template) if template?
+
     editorInitialized ->
       if getEditorElement().hasAttribute("autofocus")
         getEditorController().setLocationRange(index: 0, offset: 0)
@@ -48,6 +73,15 @@ editorInitialized = (callback) ->
         done()
       else
         callback done
+
+@editorConfigTest = (name, {template, setup, teardown}, callback) ->
+  editorTest name,
+    template: template ? "editor_empty"
+    setup: setup
+    teardown: ->
+      Trix.config = deepCopy(originalConfig)
+      teardown?()
+    , callback
 
 @assertLocationRange = (start, end) ->
   expectedLocationRange = normalizeRange([start, end])

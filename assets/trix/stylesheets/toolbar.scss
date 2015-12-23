@@ -3,7 +3,7 @@ trix-toolbar {
     box-sizing: border-box;
   }
 
-  .button_group {
+  .button-group {
     display: inline-block;
     font-size: 0;
     margin: 0 8px 4px 0;
@@ -104,11 +104,11 @@ trix-toolbar {
         }
       }
 
-      &.link_dialog {
+      &.dialog-link {
         min-width: 300px;
         max-width: 600px;
 
-        .button_group {
+        .button-group {
           max-width: 110px;
         }
 

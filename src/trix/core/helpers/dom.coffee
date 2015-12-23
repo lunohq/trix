@@ -131,6 +131,9 @@ Trix.extend
     if options.textContent
       element.textContent = options.textContent
 
+    if options.html
+      element.innerHTML = options.html
+
     element
 
   cloneFragment: (sourceFragment) ->

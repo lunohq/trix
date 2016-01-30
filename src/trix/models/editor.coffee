@@ -56,6 +56,9 @@ class Trix.Editor
   insertLineBreak: ->
     @composition.insertLineBreak()
 
+  breakFormattedBlock: ->
+    @composition.breakFormattedBlock()
+
   # Selection
 
   getSelectedRange: ->
